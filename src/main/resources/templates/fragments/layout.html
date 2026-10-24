@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="topbar" th:fragment="topbar">
+    <a class="brand" th:href="@{/issues}">
+        <span class="brand-mark">I</span>
+        <span>issueflow<span class="brand-dot">.</span></span>
+    </a>
+    <nav class="topnav">
+        <a class="nav-link active" th:href="@{/issues}">Workspace</a>
+        <span class="avatar" title="IssueFlow workspace">IF</span>
+    </nav>
+</header>
+</body>
+</html>

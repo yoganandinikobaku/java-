@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="|${pageTitle} · IssueFlow|">Create issue · IssueFlow</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: topbar}"></div>
+<main class="page-shell narrow-shell">
+    <a class="back-link" th:href="@{/issues}">← Back to issue board</a>
+    <section class="form-card">
+        <div class="form-heading">
+            <span class="form-icon">✳</span>
+            <p class="eyebrow">ISSUE WORKFLOW</p>
+            <h1 th:text="${pageTitle}">Create issue</h1>
+            <p class="subheading">Capture the details so your team can take action.</p>
+        </div>
+        <form th:action="${formAction}" th:object="${issueForm}" method="post" class="issue-form">
+            <div class="field">
+                <label for="title">Issue title <span class="required">*</span></label>
+                <input id="title" type="text" th:field="*{title}" placeholder="e.g. Checkout page returns an error" maxlength="120" required>
+                <small class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></small>
+            </div>
+            <div class="field">
+                <label for="description">Description <span class="required">*</span></label>
+                <textarea id="description" th:field="*{description}" rows="5" maxlength="2000" placeholder="What happened? Include steps to reproduce if relevant." required></textarea>
+                <small class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></small>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="reporter">Reported by <span class="required">*</span></label>
+                    <input id="reporter" type="text" th:field="*{reporter}" maxlength="100" placeholder="Your name" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('reporter')}" th:errors="*{reporter}"></small>
+                </div>
+                <div class="field">
+                    <label for="assignee">Assignee</label>
+                    <input id="assignee" type="text" th:field="*{assignee}" maxlength="100" placeholder="Leave blank if unassigned">
+                    <small class="field-error" th:if="${#fields.hasErrors('assignee')}" th:errors="*{assignee}"></small>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="priority">Priority</label>
+                    <select id="priority" th:field="*{priority}">
+                        <option th:each="item : ${priorities}" th:value="${item}" th:text="${item}">MEDIUM</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="status">Status</label>
+                    <select id="status" th:field="*{status}">
+                        <option th:each="item : ${statuses}" th:value="${item}" th:text="${#strings.replace(item.name(), '_', ' ')}">OPEN</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a class="button button-secondary" th:href="@{/issues}">Cancel</a>
+                <button class="button button-primary" type="submit" th:text="${pageTitle == 'Edit issue' ? 'Save changes' : 'Create issue'}">Create issue</button>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="|IF-${issue.id} · IssueFlow|">Issue · IssueFlow</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: topbar}"></div>
+<main class="page-shell narrow-shell">
+    <a class="back-link" th:href="@{/issues}">← Back to issue board</a>
+    <div class="flash success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <article class="detail-card">
+        <div class="detail-topline">
+            <span class="issue-key large-key" th:text="|IF-${issue.id}|">IF-1</span>
+            <div class="detail-actions">
+                <a class="button button-secondary" th:href="@{/issues/{id}/edit(id=${issue.id})}">Edit issue</a>
+                <form th:action="@{/issues/{id}/delete(id=${issue.id})}" method="post" onsubmit="return confirm('Delete this issue? This cannot be undone.');">
+                    <button class="button button-danger" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+        <h1 class="detail-title" th:text="${issue.title}">Issue title</h1>
+        <div class="detail-badges">
+            <span class="status" th:classappend="| status-${#strings.toLowerCase(issue.status)}|" th:text="${#strings.replace(issue.status.name(), '_', ' ')}">OPEN</span>
+            <span class="priority" th:classappend="| priority-${#strings.toLowerCase(issue.priority)}|" th:text="|${issue.priority} PRIORITY|">MEDIUM PRIORITY</span>
+        </div>
+        <div class="detail-section">
+            <h2>Description</h2>
+            <p class="description-text" th:text="${issue.description}">Issue description goes here.</p>
+        </div>
+        <div class="detail-meta">
+            <div><span class="meta-label">REPORTED BY</span><strong th:text="${issue.reporter}">Reporter</strong></div>
+            <div><span class="meta-label">ASSIGNEE</span><strong th:text="${issue.assignee == null ? 'Unassigned' : issue.assignee}">Unassigned</strong></div>
+            <div><span class="meta-label">CREATED</span><strong th:text="${#temporals.format(issue.createdAt, 'MMM d, yyyy · HH:mm')}">Date</strong></div>
+            <div><span class="meta-label">LAST UPDATED</span><strong th:text="${#temporals.format(issue.updatedAt, 'MMM d, yyyy · HH:mm')}">Date</strong></div>
+        </div>
+    </article>
+</main>
+</body>
+</html>

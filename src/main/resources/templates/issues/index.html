@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Issues · IssueFlow</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: topbar}"></div>
+<main class="page-shell">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">TEAM WORKSPACE <span class="eyebrow-dot"></span> SOFTWARE DELIVERY</p>
+            <h1>Issue board</h1>
+            <p class="subheading">Keep bugs and work moving forward, together.</p>
+        </div>
+        <a class="button button-primary" th:href="@{/issues/new}"><span class="plus">+</span> Create issue</a>
+    </section>
+
+    <div class="flash success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <section class="stats-grid" aria-label="Issue summary">
+        <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">All issues</span><span class="stat-icon icon-purple">#</span></div>
+            <strong th:text="${totalCount}">0</strong><span class="stat-caption">tracked in workspace</span>
+        </article>
+        <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Open</span><span class="stat-icon icon-blue">○</span></div>
+            <strong th:text="${openCount}">0</strong><span class="stat-caption">waiting to be picked up</span>
+        </article>
+        <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">In progress</span><span class="stat-icon icon-amber">↗</span></div>
+            <strong th:text="${progressCount}">0</strong><span class="stat-caption">currently being worked on</span>
+        </article>
+        <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Resolved</span><span class="stat-icon icon-green">✓</span></div>
+            <strong th:text="${resolvedCount}">0</strong><span class="stat-caption">successfully completed</span>
+        </article>
+    </section>
+
+    <section class="board-card">
+        <div class="board-header">
+            <div>
+                <h2>Issues</h2>
+                <p class="muted">Search, triage, and follow up on team work.</p>
+            </div>
+            <form class="filters" th:action="@{/issues}" method="get">
+                <label class="search-box">
+                    <span aria-hidden="true">⌕</span>
+                    <input type="search" name="q" th:value="${query}" placeholder="Search issues..." aria-label="Search issues">
+                </label>
+                <select name="status" aria-label="Filter by status">
+                    <option value="">Every status</option>
+                    <option th:each="item : ${statuses}" th:value="${item}" th:text="${#strings.replace(item.name(), '_', ' ')}"
+                            th:selected="${selectedStatus == item}"></option>
+                </select>
+                <button class="button button-secondary" type="submit">Filter</button>
+            </form>
+        </div>
+        <div class="table-wrap" th:if="${!issues.isEmpty()}">
+            <table>
+                <thead>
+                <tr><th>ISSUE</th><th>PRIORITY</th><th>STATUS</th><th>ASSIGNEE</th><th>UPDATED</th><th></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="issue : ${issues}">
+                    <td>
+                        <a class="issue-title" th:href="@{/issues/{id}(id=${issue.id})}" th:text="${issue.title}">Issue title</a>
+                        <span class="issue-key" th:text="|IF-${issue.id}|">IF-1</span>
+                    </td>
+                    <td><span class="priority" th:classappend="| priority-${#strings.toLowerCase(issue.priority)}|" th:text="${issue.priority}">MEDIUM</span></td>
+                    <td><span class="status" th:classappend="| status-${#strings.toLowerCase(issue.status)}|" th:text="${#strings.replace(issue.status.name(), '_', ' ')}">OPEN</span></td>
+                    <td class="assignee-cell"><span class="mini-avatar" th:text="${issue.assignee == null ? '—' : #strings.substring(issue.assignee, 0, 1)}">A</span><span th:text="${issue.assignee == null ? 'Unassigned' : issue.assignee}">Unassigned</span></td>
+                    <td class="date-cell" th:text="${#temporals.format(issue.updatedAt, 'MMM d, yyyy')}">Oct 24, 2026</td>
+                    <td><a class="row-arrow" th:href="@{/issues/{id}(id=${issue.id})}" aria-label="View issue">→</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" th:if="${issues.isEmpty()}">
+            <span class="empty-icon">◇</span>
+            <h3 th:text="${query != '' or selectedStatus != null ? 'No matching issues' : 'Your issue board is clear'}">Your issue board is clear</h3>
+            <p th:text="${query != '' or selectedStatus != null ? 'Try changing your search or filter.' : 'Create your first issue to start tracking work.'}">Create your first issue to start tracking work.</p>
+            <a class="button button-primary" th:if="${query == '' and selectedStatus == null}" th:href="@{/issues/new}">Create an issue</a>
+        </div>
+        <footer class="board-footer"><span th:text="|Showing ${issues.size()} issue(s)|">Showing 0 issues</span><span>Sorted by latest update</span></footer>
+    </section>
+    <p class="page-footnote">IssueFlow · A focused workspace for better software delivery</p>
+</main>
+</body>
+</html>

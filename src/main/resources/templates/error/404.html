@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Not found · IssueFlow</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/layout :: topbar}"></div>
+<main class="page-shell narrow-shell">
+    <section class="empty-state error-state">
+        <span class="empty-icon">?</span>
+        <h1>Issue not found</h1>
+        <p th:text="${message}">The issue may have been deleted or the address is incorrect.</p>
+        <a class="button button-primary" th:href="@{/issues}">Return to issue board</a>
+    </section>
+</main>
+</body>
+</html>

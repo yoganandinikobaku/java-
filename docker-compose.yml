@@ -1,0 +1,21 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: issueflow-mysql
+    environment:
+      MYSQL_DATABASE: issueflow
+      MYSQL_USER: issueflow
+      MYSQL_PASSWORD: issueflow_dev
+      MYSQL_ROOT_PASSWORD: root_dev
+    ports:
+      - "3306:3306"
+    volumes:
+      - issueflow-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  issueflow-mysql-data:
