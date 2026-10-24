@@ -1,6 +1,6 @@
 # IssueFlow
 
-IssueFlow is a small issue-tracking web application built with Java and Spring Boot. It gives a team a visual board to create, search, assign, edit, and track software issues through their lifecycle.
+IssueFlow is an issue-tracking application for recording software defects and following their progress from open to resolved. It provides a server-rendered web interface and a JSON REST API, backed by MySQL.
 
 ## Features
 
@@ -15,27 +15,33 @@ IssueFlow is a small issue-tracking web application built with Java and Spring B
 - Docker Compose setup for a local MySQL database
 - Service unit test using JUnit and Mockito
 
-## Technology
+## Technology stack
 
-Java 17, Spring Boot, Spring MVC, Thymeleaf, Spring Data JPA, Hibernate, Jakarta Bean Validation, MySQL, Maven, HTML, and CSS.
+- Java 17
+- Spring Boot, Spring MVC, Spring Data JPA, Hibernate
+- Thymeleaf, HTML, and CSS
+- MySQL
+- Jakarta Bean Validation
+- Maven
+- JUnit and Mockito
+
+## Requirements
+
+- JDK 17 or newer
+- Docker Desktop with Docker Compose, or MySQL 8
+- Maven, or an IDE that can import and run a Maven project
 
 ## Run locally
 
-### Prerequisites
+### Start the database
 
-- JDK 17 or newer
-- Docker Desktop with Docker Compose, or a local MySQL 8 server
-- Maven (or import the `pom.xml` into IntelliJ IDEA/Eclipse)
-
-### Start MySQL with Docker
-
-From the project directory:
+From the repository root, start the MySQL service:
 
 ```powershell
 docker compose up -d
 ```
 
-The development database is `issueflow`. The local-only credentials are configured in `docker-compose.yml` and `application.properties`. Change them before using this outside your own computer.
+The Compose configuration creates the `issueflow` database with local development credentials. These credentials are for local development only.
 
 ### Start the application
 
@@ -43,9 +49,26 @@ The development database is `issueflow`. The local-only credentials are configur
 mvn spring-boot:run
 ```
 
-Open [http://localhost:8080](http://localhost:8080).
+Open [http://localhost:8080](http://localhost:8080) in a browser.
 
-To use a separate MySQL instance, set `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` in your environment before starting the application.
+To connect to another MySQL instance, configure the `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` environment variables before starting the application.
+
+### Run tests
+
+```powershell
+mvn test
+```
+
+## Application structure
+
+- **Web layer:** Spring MVC controllers and Thymeleaf templates render the issue board and forms.
+- **Service layer:** `IssueService` implements issue creation, updates, filtering, and deletion.
+- **Persistence layer:** `IssueRepository` uses Spring Data JPA to store issue entities in MySQL.
+- **REST API:** `IssueRestController` exposes JSON endpoints for issue management.
+
+## Issue fields
+
+Each issue has a title, description, reporter, optional assignee, priority, status, and creation/update timestamps. Status values are `OPEN`, `IN_PROGRESS`, and `RESOLVED`; priority values are `LOW`, `MEDIUM`, and `HIGH`.
 
 ## Main routes
 
@@ -84,23 +107,6 @@ Example JSON for `POST /api/issues`:
 
 Validation failures and missing issue IDs return JSON error responses on the API routes.
 
-Run the tests with:
+## Database schema
 
-```powershell
-mvn test
-```
-
-## Database note
-
-For this learning project, Hibernate creates/updates tables using `spring.jpa.hibernate.ddl-auto=update`. For a production application, use versioned migrations such as Flyway or Liquibase instead.
-
-## Suggested interview walkthrough
-
-1. Explain the issue lifecycle: open, in progress, resolved.
-2. Trace a form submission from `IssueController` through `IssueService` and `IssueRepository` to MySQL.
-3. Explain why status and priority are enums and stored as strings.
-4. Show validation in `IssueForm` and the form error messages.
-5. Demonstrate search, status filtering, and the dashboard counts.
-6. Discuss a future improvement, such as authentication, comments, pagination, or REST API tests.
-
-Build and run the project yourself, make a few changes, and be ready to explain the code before presenting it as your work.
+Hibernate manages the schema using `spring.jpa.hibernate.ddl-auto=update`, which is convenient for local development. For deployments that require controlled schema changes, use a migration tool such as Flyway or Liquibase.
